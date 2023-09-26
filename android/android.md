@@ -85,4 +85,3 @@ SharedPreferences (UserDefault相当)
 
 ViewModelScope生命周期比Activity长
 
-Controller(references、UI Data)->viewGroup
