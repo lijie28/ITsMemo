@@ -1,4 +1,4 @@
-## 项目构成
+# 项目构成
 
 ### 环境等配置
 build.gradle(安卓版本配置，库管理，build settings相当)
@@ -85,3 +85,149 @@ SharedPreferences (UserDefault相当)
 
 ViewModelScope生命周期比Activity长
 
+### 多线程
+通过Thread()里实行run()方法，也可继承Thread重写run
+> new Thread() {  
+&emsp;public void run() {  
+&emsp;&emsp;// ... 耗时操作  
+&emsp;&emsp;&emsp;// 回到UI主线程  
+&emsp;&emsp;&emsp;runOnUiThread(new Runnable) {  
+&emsp;&emsp;&emsp;&emsp;@Override  
+&emsp;&emsp;&emsp;&emsp;public void run() {  
+&emsp;&emsp;&emsp;&emsp;}  
+&emsp;&emsp;&emsp;}  
+&emsp;&emsp;}  
+}
+
+### Http请求
+HttpUrlConnection ,和swift的URLSession/URLRequest用法差不多
+
+OkHttp, 非官方库，但写起来更简洁
+> https://square.github.io/okhttp/
+
+# Kotlin
+### 语法
+
+变量:
+- val (read-only)不可变
+- var (mutable)可变
+
+---
+### 与swift相似
+可在: 后声明类型
+> val c: Int
+
+有for in 循环
+> for (item in items) { }
+
+和range
+> for (x in 1..10) { }
+
+有函数的默认参数
+> fun foo(a: Int = 0, b: String = "")
+
+检测元素是否存在于集合中
+> if ("john@example.com" in emailsList) { …… }
+
+遍历 map/pair型list
+>for ((k, v) in map) {
+    println("$k -> $v")
+}
+
+类与属性写法基本相似
+> class Address {<br>
+    var name: String = "Holmes, Sherlock"<br>
+    var street: String = "Baker"<br>
+    var city: String = "London"<br>
+    var state: String? = null<br>
+    var zip: String = "123456"<br>
+}
+
+---
+### 与swift不同
+有 When 表达式 （取代switch）
+>fun main() {<br>
+    val items = setOf("apple", "banana", "kiwifruit")<br>
+    when {<br>
+        "orange" in items -> println("juicy")<br>
+        "apple" in items -> println("apple is fine too")<br>
+    }
+}
+
+If not null and else 缩写
+> kotlin: files?.size ?: "empty"
+
+> swift: files?.size ?? "empty"
+
+单例、用object修饰
+> object Resource {
+    val name = "Name"
+}
+
+interface
+> swift的protocol、实现时也不需要加extension修饰
+
+---
+### 继承
+默认情况下，Kotlin 类是最终（final）的：它们不能被继承。 要使一个类可继承，请用 open 关键字标记它。
+> open class Base // 该类开放继承
+
+需要重写的方法成员同样需要open
+> open class Shape {  
+    open val vertexCount: Int = 0  
+    open fun draw() { /*……*/ }  
+    fun fill() { /*……*/ }  
+}
+
+---
+### 扩展
+直接 fun 类名.方法 { ... }
+> class User(var name:String)  
+扩展函数:  
+fun User.Print(){  
+    print("用户名 $name")  
+}
+
+可空接收者
+> fun Any?.toString(): String {  
+    if (this == null) return "null"  
+    // 空检测之后，“this”会自动转换为非空类型，所以下面的 toString()  
+    // 解析为 Any 类的成员函数  
+    return toString()  
+}
+
+能扩展属性
+> class Snake{  
+    var aaa = 1  
+}  
+var Snake.size:Int  
+    set(value) {aaa = value}  
+    get() = aaa +1  
+
+但不能有初始化器
+> val House.number = 1 // 错误：扩展属性不能有初始化器
+
+---
+### 枚举类
+枚举类的最基本的用法是实现类型安全的枚举：
+> enum class Direction {  
+    NORTH, SOUTH, WEST, EAST  
+}
+
+自 Kotlin 1.1 起，可以使用 enumValues<T>() 与 enumValueOf<T>() 函数以泛型的方式访问枚举类中的常量 ：
+> enum class RGB { RED, GREEN, BLUE }  
+inline fun <reified T : Enum<T>> printAllValues() {  
+    print(enumValues<T>().joinToString { it.name })  
+}  
+printAllValues<RGB>() // 输出 RED, GREEN, BLUE
+
+每个枚举常量都具有在枚举类声明中获取其名称与位置的属性：
+> val name: String  
+val ordinal: Int
+
+能带参数
+> enum class Color(val rgb: Int) {  
+        RED(0xFF0000),  
+        GREEN(0x00FF00),  
+        BLUE(0x0000FF)  
+}
